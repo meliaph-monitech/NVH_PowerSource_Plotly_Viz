@@ -7,20 +7,22 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
 # --- GitHub URL Configuration ---
-# IMPORTANT: Replace these with your GitHub username and repository name
 GITHUB_USERNAME = "meliaph-monitech"
 GITHUB_REPO = "NVH_PowerSource_Plotly_Viz"
-# This is the path to your manifest file and plots folder in the repo
 # Since your files are in the root of the repository, this should be empty.
 PATH_TO_DATA = "" 
 
-# Construct the base URL for raw content
-base_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{GITHUB_REPO}/main/{PATH_TO_DATA}"
+# REFINED: URL construction to avoid double slashes.
+# The base path to the repository's main branch.
+base_path = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{GITHUB_REPO}/main"
+
 # --- Data Loading ---
 @st.cache_data
 def load_manifest():
-    manifest_url = f"{base_url}/manifest.csv"
+    # Conditionally add the path to the URL
+    manifest_url = f"{base_path}/{PATH_TO_DATA}/manifest.csv" if PATH_TO_DATA else f"{base_path}/manifest.csv"
     try:
         df = pd.read_csv(manifest_url)
         return df
@@ -39,16 +41,10 @@ if not manifest_df.empty:
     # --- Sidebar Filters ---
     st.sidebar.header("Filters")
     
-    # Get unique values for filters from the manifest
     unique_dates = sorted(manifest_df['date'].unique(), reverse=True)
-    unique_status1 = sorted(manifest_df['status1'].unique())
-    unique_status2 = sorted(manifest_df['status2'].unique())
-    unique_shuttles = sorted(manifest_df['shuttle'].unique())
-
-    # Create the widgets
+    
     selected_date = st.sidebar.selectbox("Select Date (YYMMDD)", unique_dates)
     
-    # Filter for the selected date first to make other selections faster
     date_filtered_df = manifest_df[manifest_df['date'] == selected_date]
     
     selected_status1 = st.sidebar.multiselect("Select Machine Status 1", sorted(date_filtered_df['status1'].unique()))
@@ -68,7 +64,8 @@ if not manifest_df.empty:
     if not filtered_plots.empty:
         st.header(f"Displaying {len(filtered_plots)} Plot(s) for {selected_date}")
         for _, row in filtered_plots.iterrows():
-            plot_url = f"{base_url}/plot_outputs/{row['filename']}"
+            # Conditionally add the path to the plot URL
+            plot_url = f"{base_path}/{PATH_TO_DATA}/plot_outputs/{row['filename']}" if PATH_TO_DATA else f"{base_path}/plot_outputs/{row['filename']}"
             
             st.subheader(f"Plot: {row['status1']}_{row['status2']} on Shuttle {row['shuttle']}")
             st.components.v1.iframe(plot_url, height=600, scrolling=True)
