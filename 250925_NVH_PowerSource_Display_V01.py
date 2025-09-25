@@ -7,17 +7,16 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
-
 # --- GitHub URL Configuration ---
 # IMPORTANT: Replace these with your GitHub username and repository name
-GITHUB_USERNAME = "YOUR_USERNAME"
-GITHUB_REPO = "YOUR_REPO_NAME"
+GITHUB_USERNAME = "meliaph-monitech"
+GITHUB_REPO = "NVH_PowerSource_Plotly_Viz"
 # This is the path to your manifest file and plots folder in the repo
-PATH_TO_DATA = "" # e.g., "main" or "" if in root, or "folder_name/"
+# Since your files are in the root of the repository, this should be empty.
+PATH_TO_DATA = "" 
 
 # Construct the base URL for raw content
 base_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{GITHUB_REPO}/main/{PATH_TO_DATA}"
-
 # --- Data Loading ---
 @st.cache_data
 def load_manifest():
